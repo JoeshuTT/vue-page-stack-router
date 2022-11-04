@@ -1,6 +1,7 @@
-import PageStackRouterView from "./components/PageStackRouterView";
+import PageStackRouterView from "./components/PageStackRouterView.vue";
+import history from "./history";
 
-import pageStack from "./index";
+ 
 
 export function install(Vue, options = {}) {
   const { router } = options;
@@ -17,45 +18,51 @@ export function install(Vue, options = {}) {
   const originForward = router.forward;
 
   router.push = function push(location, onResolve, onReject) {
-    pageStack.actionType = "push";
+    history.actionType = "push";
     if (onResolve || onReject) {
-      return originPush.call(this, location, onResolve, onReject).catch(err => err); // 修复路由报错 NavigationDuplicated
+      return originPush
+        .call(this, location, onResolve, onReject)
+        .catch((err) => err); // 修复路由报错 NavigationDuplicated
     }
 
-    return originPush.call(this, location).catch(err => err);
+    return originPush.call(this, location).catch((err) => err);
   };
 
   router.replace = function replace(location, onResolve, onReject) {
-    pageStack.actionType = "replace";
+    history.actionType = "replace";
     if (onResolve || onReject) {
-      return originReplace.call(this, location, onResolve, onReject).catch(err => err); // 修复路由报错 NavigationDuplicated
+      return originReplace
+        .call(this, location, onResolve, onReject)
+        .catch((err) => err); // 修复路由报错 NavigationDuplicated
     }
 
-    return originReplace.call(this, location).catch(err => err);
+    return originReplace.call(this, location).catch((err) => err);
   };
 
   router.go = function go(n) {
-    pageStack.actionType = "go";
+    history.actionType = "go";
     return originGo.call(this, n);
   };
 
   router.back = function back() {
-    pageStack.actionType = "back";
+    history.actionType = "back";
     return originBack.call(this);
   };
 
   router.forward = function forward() {
-    pageStack.actionType = "forward";
+    history.actionType = "forward";
     return originForward.call(this);
   };
 
   // 保存滚动位置
   Vue.mixin({
     beforeRouteLeave(_to, from, next) {
-      this.$parent && this.$parent.saveScrollPosition && this.$parent.saveScrollPosition(from);
+      this.$parent &&
+        this.$parent.saveScrollPosition &&
+        this.$parent.saveScrollPosition(from);
 
       next();
-    }
+    },
   });
 
   Vue.component("PageStackRouterView", PageStackRouterView);

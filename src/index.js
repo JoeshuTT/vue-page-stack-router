@@ -4,6 +4,4 @@ const pageStack = {};
 
 pageStack.install = install;
 
-pageStack.actionType = "";
-
 export default pageStack;

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import pageStack from "../index";
+import history from "../history";
 import { isScrollableNode, getManualScrollingNodes } from "../utils/scroll";
 const body = document.body;
 const screenScrollingElement = document.documentElement;
@@ -71,7 +71,7 @@ export default {
           this.pageStackList.splice(index + 1);
           this.revertScrollPosition(to);
         } else {
-          if (pageStack.actionType === "replace") {
+          if (history.actionType === "replace") {
             this.pageStackList.splice(this.pageStackList.length - 1);
           }
 
