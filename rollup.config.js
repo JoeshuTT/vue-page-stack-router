@@ -33,5 +33,8 @@ export default {
       name: "VuePageStackTouter",
     },
   ],
-  plugins: [babel({ babelHelpers: "bundled", exclude: "node_modules/**" }), vuePlugin()],
+  plugins: [
+    // babel({ babelHelpers: "bundled", exclude: "node_modules/**" }), 
+    vuePlugin()
+  ],
 };

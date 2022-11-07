@@ -19,20 +19,7 @@ export default {
     el: {
       require: true,
       type: String,
-      default: "#app", // 可根据实际业务修改
-    },
-    /**
-     * 模式：如果为`manual`，则需要配置路由的 `meta` 字段
-     * @example
-     * meta: {
-     *  title: "餐厅",
-     *  scrollingElement: [".list-scroller", ".header-bd-radio-group"],
-     *  keepAlive: true
-     * }
-     */
-    mode: {
-      type: String,
-      default: "", // manual
+      default: "#app",
     },
     /**
      * 最多可以缓存多少组件实例。
@@ -93,7 +80,7 @@ export default {
       return this.pageStackList.findIndex((v) => v.name === name);
     },
     /**
-     * 保存该页面下各个可滚动元素的滚动位置
+     * 保存该页面下各个滚动元素的滚动位置
      */
     saveScrollPosition(from) {
       if (this.disableSaveScrollPosition) {
@@ -107,10 +94,16 @@ export default {
           const screenNodeList = [screenScrollingElement, body]; // 屏幕滚动容器元素
           const pageNode = document.querySelector(this.el);
           let pageNodeList = [];
-          if (this.mode === "manual") {
+          // 配置路由元信息，手动指定滚动元素
+          // meta: {
+          //   title: "餐厅",
+          //   scrollingElement: [".list-scroller", ".header-bd-radio-group"],
+          //   keepAlive: true
+          // }
+          if (from.meta.scrollingElement) {
             pageNodeList = [
               pageNode,
-              ...getManualScrollingNodes(from.meta?.scrollingElement ?? []),
+              ...getManualScrollingNodes(from.meta.scrollingElement),
             ];
           } else {
             pageNodeList = [pageNode, ...pageNode.querySelectorAll("*")];
@@ -133,7 +126,7 @@ export default {
       }
     },
     /**
-     * 恢复该页面下各个可滚动元素的滚动位置
+     * 恢复该页面下各个滚动元素的滚动位置
      */
     revertScrollPosition(to) {
       if (this.disableSaveScrollPosition) {
@@ -147,7 +140,7 @@ export default {
         try {
           this.$nextTick(() => {
             this.pageStackList[index].scrollRestorationList.forEach(
-              ([node, { x, y }]) => {
+              ([node, { left, top }]) => {
                 left && (node.scrollLeft = left);
                 top && (node.scrollTop = top);
               }

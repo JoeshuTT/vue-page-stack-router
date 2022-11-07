@@ -1,8 +1,6 @@
 import PageStackRouterView from "./components/PageStackRouterView.vue";
 import history from "./history";
 
- 
-
 export function install(Vue, options = {}) {
   const { router } = options;
 
