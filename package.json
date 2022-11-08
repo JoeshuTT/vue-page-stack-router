@@ -1,0 +1,43 @@
+{
+  "name": "vue-page-stack-router",
+  "version": "2.0.1",
+  "description": "一个 Vue.js 的页面栈路由管理器",
+  "author": "JoeshuTT",
+  "license": "MIT",
+  "keywords": [
+    "vue",
+    "router",
+    "page-stack"
+  ],
+  "main": "dist/vue-page-stack-router.common.js",
+  "module": "dist/vue-page-stack-router.esm.js",
+  "browser": "dist/vue-page-stack-router.js",
+  "unpkg": "dist/vue-page-stack-router.js",
+  "jsdelivr": "dist/vue-page-stack-router.js",
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@babel/core": "~7.19.4",
+    "@babel/preset-env": "~7.19.4",
+    "@rollup/plugin-babel": "~6.0.2",
+    "@rollup/plugin-json": "^5.0.1",
+    "postcss": "~7.0.11",
+    "rollup": "~3.2.5",
+    "rollup-plugin-vue": "~5.1.9",
+    "vue-template-compiler": "~2.6.14"
+  },
+  "peerDependencies": {
+    "vue": "^2.0.0",
+    "vue-router": "^3.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/JoeshuTT/vue-page-stack-router/issues"
+  },
+  "homepage": "https://github.com/JoeshuTT/vue-page-stack-router/"
+}
