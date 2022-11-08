@@ -2,6 +2,7 @@ import { reactive } from "vue";
 import PageStackRouterView from "./components/PageStackRouterView.vue";
 import PageStackRouter from "./PageStackRouter";
 import { pageStackRouterKey } from "./injectionSymbols";
+import { isDef } from "./utils/index";
 
 export function install(app, options = {}) {
   const {
@@ -21,12 +22,16 @@ export function install(app, options = {}) {
     disableSaveScrollPosition,
   });
 
-  router.afterEach(async (to, from) => {
-    if (to.name) {
-      pageStackRouter.navigate(to, from);
+  router.afterEach((to, from) => {
+    let keepAlive = to.meta?.keepAlive;
+
+    if (!isDef(keepAlive)) {
+      keepAlive = true;
     }
 
-    return true;
+    if (to.name && keepAlive) {
+      pageStackRouter.navigate(to, from);
+    }
   });
 
   app.component("PageStackRouterView", PageStackRouterView);

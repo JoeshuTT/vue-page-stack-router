@@ -15,12 +15,7 @@ export function saveScrollPosition(from, appRoot = "#app") {
     const appRootNode = document.querySelector(appRoot); // Vue 应用实例挂载容器元素
     let pageNodeList = [];
 
-    //   通过配置路由元信息，可以手动指定页面内滚动容器元素
-    //   meta: {
-    //    title: "餐厅",
-    //    scrollingElement: [".list-scroller", ".header-bd-radio-group"],
-    //    keepAlive: true
-    //  }
+
     if (from.meta?.scrollingElement) {
       pageNodeList = [
         appRootNode,

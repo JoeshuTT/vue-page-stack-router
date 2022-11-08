@@ -83,12 +83,31 @@ export const router = createRouter({
 
 `VuePageStackRouter` 插件参数说明：
 
-| 参数                      | 说明                     | 类型      | 默认值 |
-| ------------------------- | ------------------------ | --------- | ------ |
-| router                    | vue-router 实例          | `object`  | -      |
-| el                        | Vue 应用实例挂载容器元素 | `string`  | '#app' |
-| max                       | 最多可以缓存多少组件实例 | `number`  | 10     |
-| disableSaveScrollPosition | 禁用自动保存滚动位置     | `boolean` | false  |
+| 参数                      | 说明                         | 类型      | 默认值 |
+| ------------------------- | ---------------------------- | --------- | ------ |
+| router                    | vue-router 实例              | `object`  | -      |
+| el                        | Vue 应用实例挂载容器元素     | `string`  | '#app' |
+| max                       | 最多可以缓存多少页面组件实例 | `number`  | 10     |
+| disableSaveScrollPosition | 禁用自动保存滚动位置         | `boolean` | false  |
+
+## 配置路由元信息（可选）
+
+默认是不需要加的，但是为了灵活性，可以根据需要配置路由的 `meta` 字段：
+
+```js
+{
+  path: '/login',
+  name: 'login',
+  component: () => import('@/views/login/index.vue'),
+  meta: {
+    title: '登录',
+    // `scrollingElement`字段，手动指定页面内滚动容器元素。默认查询全部
+    scrollingElement: [".list-scroller", ".header-bd-radio-group"],
+    // `keepAlive`字段，是否参与页面栈导航。默认全部参与
+    keepAlive: true
+  },
+},
+```
 
 ## 使用注意
 

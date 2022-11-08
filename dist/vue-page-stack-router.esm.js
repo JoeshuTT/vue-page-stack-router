@@ -1,11 +1,11 @@
 /*!
-  * vue-page-stack-router v3.0.0
+  * vue-page-stack-router v3.1.1
   * (c) 2022 JoeshuTT
   * @license MIT
   */
 import { inject, resolveComponent, openBlock, createBlock, withCtx, KeepAlive, resolveDynamicComponent, nextTick, reactive } from 'vue';
 
-var version = "3.0.0";
+var version = "3.1.1";
 
 /**
  * 使用 Symbol 作为 pageStackRouter 的注入名
@@ -89,12 +89,7 @@ function saveScrollPosition(from, appRoot = "#app") {
     const appRootNode = document.querySelector(appRoot); // Vue 应用实例挂载容器元素
     let pageNodeList = [];
 
-    //   通过配置路由元信息，可以手动指定页面内滚动容器元素
-    //   meta: {
-    //    title: "餐厅",
-    //    scrollingElement: [".list-scroller", ".header-bd-radio-group"],
-    //    keepAlive: true
-    //  }
+
     if (from.meta?.scrollingElement) {
       pageNodeList = [
         appRootNode,
@@ -194,6 +189,9 @@ class PageStackRouter {
     //     : navigationDirection.unknown
   }
 
+  /**
+   * push 方法会在当前栈顶推入一个页面
+   */
   push(location) {
     const historyState = window.history.state;
 
@@ -207,15 +205,29 @@ class PageStackRouter {
     });
   }
 
+  /**
+   * pop 方法会推出栈顶的一个页面
+   */
   pop() {
     this.pageList.splice(this.pageList.length - 1);
   }
 
+  /**
+   * replace 方法会替换当前栈顶的页面
+   */
   replace(location) {
     this.pageList.splice(this.pageList.length - 1);
 
     this.push(location);
   }
+}
+
+/**
+ * 是否有值
+ * @param {*} val
+ */
+function isDef(val) {
+  return val !== undefined && val !== null;
 }
 
 function install(app, options = {}) {
@@ -236,12 +248,16 @@ function install(app, options = {}) {
     disableSaveScrollPosition,
   });
 
-  router.afterEach(async (to, from) => {
-    if (to.name) {
-      pageStackRouter.navigate(to, from);
+  router.afterEach((to, from) => {
+    let keepAlive = to.meta?.keepAlive;
+
+    if (!isDef(keepAlive)) {
+      keepAlive = true;
     }
 
-    return true;
+    if (to.name && keepAlive) {
+      pageStackRouter.navigate(to, from);
+    }
   });
 
   app.component("PageStackRouterView", script);
