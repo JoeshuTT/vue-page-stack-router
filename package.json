@@ -14,6 +14,9 @@
   "browser": "dist/vue-page-stack-router.js",
   "unpkg": "dist/vue-page-stack-router.js",
   "jsdelivr": "dist/vue-page-stack-router.js",
+  "engines": {
+    "node": ">=14"
+  },
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w"
