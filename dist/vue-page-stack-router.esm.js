@@ -1,9 +1,9 @@
 /*!
-  * vue-page-stack-router v2.0.1
+  * vue-page-stack-router v2.1.4
   * (c) 2022 JoeshuTT
   * @license MIT
   */
-var version = "2.0.1";
+var version = "2.1.4";
 
 //
 //
@@ -144,6 +144,87 @@ __vue_render__._withStripped = true;
     undefined
   );
 
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
+  return Constructor;
+}
+function _slicedToArray(arr, i) {
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+}
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+}
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+}
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+function _iterableToArrayLimit(arr, i) {
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+  if (_i == null) return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _s, _e;
+  try {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+  return _arr;
+}
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+  return arr2;
+}
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
 /**
  * 是否是滚动元素
  * @param {Element} node
@@ -152,10 +233,9 @@ function isScrollableNode(node) {
   if (!node) {
     return false;
   }
-
-  const overflowScrollReg = /scroll|auto/i;
-  const { overflow } = window.getComputedStyle(node);
-  
+  var overflowScrollReg = /scroll|auto/i;
+  var _window$getComputedSt = window.getComputedStyle(node),
+    overflow = _window$getComputedSt.overflow;
   return overflowScrollReg.test(overflow);
 }
 
@@ -164,24 +244,27 @@ function isScrollableNode(node) {
  * @param {string | string[]} el
  */
 function getManualScrollingNodes(el) {
-  const elementList = Array.isArray(el) ? [...el] : [...[el]];
-  return [...new Set(elementList)].map((v) => document.querySelector(v));
+  var elementList = Array.isArray(el) ? _toConsumableArray(el) : [el].concat();
+  return _toConsumableArray(new Set(elementList)).map(function (v) {
+    return document.querySelector(v);
+  });
 }
 
-const body = document.body;
-const screenScrollingElement = document.documentElement;
-
-const scrollPositions = new Map();
+var body = document.body;
+var screenScrollingElement = document.documentElement;
+var scrollPositions = new Map();
 
 /**
  * 保存该页面下各个滚动元素的滚动位置
  */
-function saveScrollPosition(from, appRoot = "#app") {
+function saveScrollPosition(from) {
+  var appRoot = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "#app";
   // DOM 操作有风险，try catch 护体
   try {
-    const screenNodeList = [screenScrollingElement, body]; // 屏幕滚动容器元素
-    const appRootNode = document.querySelector(appRoot); // Vue 应用实例挂载容器元素
-    let pageNodeList = [];
+    var _from$meta;
+    var screenNodeList = [screenScrollingElement, body]; // 屏幕滚动容器元素
+    var appRootNode = document.querySelector(appRoot); // Vue 应用实例挂载容器元素
+    var pageNodeList = [];
 
     //   通过配置路由元信息，可以手动指定页面内滚动容器元素
     //   meta: {
@@ -189,36 +272,28 @@ function saveScrollPosition(from, appRoot = "#app") {
     //    scrollingElement: [".list-scroller", ".header-bd-radio-group"],
     //    keepAlive: true
     //  }
-    if (from.meta?.scrollingElement) {
-      pageNodeList = [
-        appRootNode,
-        ...getManualScrollingNodes(from.meta.scrollingElement),
-      ];
+    if ((_from$meta = from.meta) !== null && _from$meta !== void 0 && _from$meta.scrollingElement) {
+      pageNodeList = [appRootNode].concat(_toConsumableArray(getManualScrollingNodes(from.meta.scrollingElement)));
     } else {
-      pageNodeList = [appRootNode, ...appRootNode.querySelectorAll("*")];
+      pageNodeList = [appRootNode].concat(_toConsumableArray(appRootNode.querySelectorAll("*")));
     }
     // prettier-ignore
-    const scrollableNodeList = [ ...screenNodeList, ...pageNodeList, ].filter(isScrollableNode);
-
-    const saver = scrollableNodeList.map((node) => [
-      node,
-      {
+    var scrollableNodeList = [].concat(screenNodeList, _toConsumableArray(pageNodeList)).filter(isScrollableNode);
+    var saver = scrollableNodeList.map(function (node) {
+      return [node, {
         left: node.scrollLeft,
-        top: node.scrollTop,
-      },
-    ]);
-
-    const scrollKey = from.fullPath;
+        top: node.scrollTop
+      }];
+    });
+    var scrollKey = from.fullPath;
     scrollPositions.set(scrollKey, saver);
   } catch (err) {
     console.error("[pageStack saveScrollPosition]", err);
   }
 }
-
 function getSavedScrollPosition(key) {
-  const scroll = scrollPositions.get(key);
-
-  scrollPositions.delete(key);
+  var scroll = scrollPositions.get(key);
+  scrollPositions["delete"](key);
   return scroll;
 }
 
@@ -226,17 +301,21 @@ function getSavedScrollPosition(key) {
  * 恢复该页面下各个滚动元素的滚动位置
  */
 function revertScrollPosition(to, router) {
-  const scrollKey = to.fullPath;
-  const scrollPosition = getSavedScrollPosition(scrollKey);
+  var scrollKey = to.fullPath;
+  var scrollPosition = getSavedScrollPosition(scrollKey);
   if (!router.app) {
-    return
+    return;
   }
-
   if (scrollPosition) {
     // DOM 操作有风险，try catch 护体
-    try { 
-      router.app.$nextTick(() => {
-        scrollPosition.forEach(([node, { left, top }]) => {
+    try {
+      router.app.$nextTick(function () {
+        scrollPosition.forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+            node = _ref2[0],
+            _ref2$ = _ref2[1],
+            left = _ref2$.left,
+            top = _ref2$.top;
           left && (node.scrollLeft = left);
           top && (node.scrollTop = top);
         });
@@ -247,136 +326,142 @@ function revertScrollPosition(to, router) {
   }
 }
 
-const history = {
-  actionType: "",
+var history = {
+  actionType: ""
 };
 
-class PageStackRouter {
-  constructor(options = {}) {
+var PageStackRouter = /*#__PURE__*/function () {
+  function PageStackRouter() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    _classCallCheck(this, PageStackRouter);
     this.pageList = [];
     this.router = options.router;
     this.el = options.el;
     this.max = options.max;
     this.disableSaveScrollPosition = options.disableSaveScrollPosition;
   }
-
-  getIndexByName(name) {
-    return this.pageList.findIndex((v) => v.name === name);
-  }
-
-  navigate(to, from) {
-    const index = this.getIndexByName(to.name);
-
-    if (~index) {
-      this.pageList.splice(index + 1);
-      revertScrollPosition(to, this.router);
-    } else {
-      if (history.actionType === "replace") {
-        this.pageList.splice(this.pageList.length - 1);
-      }
-
-      if (this.pageList.length >= this.max) {
-        this.pageList.splice(0, 1);
-      }
-
-      this.pageList.push({
-        name: to.name,
-        scrollRestorationList: [],
+  _createClass(PageStackRouter, [{
+    key: "getIndexByName",
+    value: function getIndexByName(name) {
+      return this.pageList.findIndex(function (v) {
+        return v.name === name;
       });
-
-      saveScrollPosition(from, this.el);
     }
-  }
+  }, {
+    key: "navigate",
+    value: function navigate(to, from) {
+      var index = this.getIndexByName(to.name);
+      if (~index) {
+        this.pageList.splice(index + 1);
+        revertScrollPosition(to, this.router);
+      } else {
+        if (history.actionType === "replace") {
+          this.pageList.splice(this.pageList.length - 1);
+        }
+        if (this.pageList.length >= this.max) {
+          this.pageList.splice(0, 1);
+        }
+        this.pageList.push({
+          name: to.name,
+          scrollRestorationList: []
+        });
+        saveScrollPosition(from, this.el);
+      }
+    }
+  }]);
+  return PageStackRouter;
+}();
+
+/**
+ * 是否有值
+ * @param {*} val
+ */
+function isDef(val) {
+  return val !== undefined && val !== null;
 }
 
-function install(Vue, options = {}) {
-  const {
-    router,
-    el = "#app",
-    max = 10,
-    manual = false,
-    disableSaveScrollPosition = false,
-  } = options;
-
+function install(Vue) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var router = options.router,
+    _options$el = options.el,
+    el = _options$el === void 0 ? "#app" : _options$el,
+    _options$max = options.max,
+    max = _options$max === void 0 ? 10 : _options$max,
+    _options$disableSaveS = options.disableSaveScrollPosition,
+    disableSaveScrollPosition = _options$disableSaveS === void 0 ? false : _options$disableSaveS;
   if (!router) {
-    throw new Error(`vue-router 实例必须存在！`);
+    throw new Error("vue-router \u5B9E\u4F8B\u5FC5\u987B\u5B58\u5728\uFF01");
   }
 
   // 重写路由跳转方法，记录操作方式
-  const originPush = router.push;
-  const originReplace = router.replace;
-  const originGo = router.go;
-  const originBack = router.back;
-  const originForward = router.forward;
-
+  var originPush = router.push;
+  var originReplace = router.replace;
+  var originGo = router.go;
+  var originBack = router.back;
+  var originForward = router.forward;
   router.push = function push(location, onResolve, onReject) {
     history.actionType = "push";
     if (onResolve || onReject) {
-      return originPush
-        .call(this, location, onResolve, onReject)
-        .catch((err) => err); // 修复路由报错 NavigationDuplicated
+      return originPush.call(this, location, onResolve, onReject)["catch"](function (err) {
+        return err;
+      }); // 修复路由报错 NavigationDuplicated
     }
 
-    return originPush.call(this, location).catch((err) => err);
+    return originPush.call(this, location)["catch"](function (err) {
+      return err;
+    });
   };
-
   router.replace = function replace(location, onResolve, onReject) {
     history.actionType = "replace";
     if (onResolve || onReject) {
-      return originReplace
-        .call(this, location, onResolve, onReject)
-        .catch((err) => err); // 修复路由报错 NavigationDuplicated
+      return originReplace.call(this, location, onResolve, onReject)["catch"](function (err) {
+        return err;
+      }); // 修复路由报错 NavigationDuplicated
     }
 
-    return originReplace.call(this, location).catch((err) => err);
+    return originReplace.call(this, location)["catch"](function (err) {
+      return err;
+    });
   };
-
   router.go = function go(n) {
     history.actionType = "go";
     return originGo.call(this, n);
   };
-
   router.back = function back() {
     history.actionType = "back";
     return originBack.call(this);
   };
-
   router.forward = function forward() {
     history.actionType = "forward";
     return originForward.call(this);
   };
-
-  const pageStackRouter = new PageStackRouter({
-    router,
-    el,
-    max,
-    disableSaveScrollPosition,
+  var pageStackRouter = new PageStackRouter({
+    router: router,
+    el: el,
+    max: max,
+    disableSaveScrollPosition: disableSaveScrollPosition
   });
-
-  router.afterEach((to, from) => {
-    let keepAlive = to.meta?.keepAlive;
-
-    if (!manual) {
+  router.afterEach(function (to, from) {
+    var _to$meta;
+    var keepAlive = (_to$meta = to.meta) === null || _to$meta === void 0 ? void 0 : _to$meta.keepAlive;
+    if (!isDef(keepAlive)) {
       keepAlive = true;
     }
-
     if (to.name && keepAlive) {
       pageStackRouter.navigate(to, from);
     }
   });
-
   Vue.component("PageStackRouterView", __vue_component__);
-
   Object.defineProperty(Vue.prototype, "$pageStackRouter", {
-    get() {
+    get: function get() {
       return pageStackRouter;
-    },
+    }
   });
 }
 
-const VuePageStackRouter = {
-  install,
-  version,
+var VuePageStackRouter = {
+  install: install,
+  version: version
 };
 
 export { VuePageStackRouter as default };

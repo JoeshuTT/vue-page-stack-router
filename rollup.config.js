@@ -1,4 +1,4 @@
-// import { babel } from "@rollup/plugin-babel";
+import { babel } from "@rollup/plugin-babel";
 import json from "@rollup/plugin-json";
 import vuePlugin from 'rollup-plugin-vue'
 import { readFileSync } from "node:fs";
@@ -35,7 +35,7 @@ export default {
     },
   ],
   plugins: [
-    // babel({ babelHelpers: "bundled", exclude: "node_modules/**" }), 
+    babel({ babelHelpers: "bundled", exclude: "node_modules/**" }), 
     vuePlugin(),
     json()
   ],

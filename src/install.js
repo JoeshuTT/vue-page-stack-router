@@ -1,13 +1,13 @@
 import PageStackRouterView from "./components/PageStackRouterView.vue";
 import PageStackRouter from "./PageStackRouter";
 import history from "./history/index";
+import { isDef } from "./utils/index";
 
 export function install(Vue, options = {}) {
   const {
     router,
     el = "#app",
     max = 10,
-    manual = false,
     disableSaveScrollPosition = false,
   } = options;
 
@@ -69,7 +69,7 @@ export function install(Vue, options = {}) {
   router.afterEach((to, from) => {
     let keepAlive = to.meta?.keepAlive;
 
-    if (!manual) {
+    if (!isDef(keepAlive)) {
       keepAlive = true;
     }
 

@@ -10,7 +10,7 @@
 
 ## 版本提示
 
-你当前浏览的是 **vue-page-stack-router 2.x 版本** 的文档，适用于 Vue 2 开发。如果你在使用 Vue 3，请浏览 [vue-page-stack-router@3 文档](https://github.com/JoeshuTT/vue-page-stack-router)。
+你当前浏览的是 **vue-page-stack-router 2.x 版本** 的文档，适用于 Vue 2 开发。如果你在使用 Vue 3，请浏览 [vue-page-stack-router 文档](https://github.com/JoeshuTT/vue-page-stack-router)。
 
 ## 安装
 
@@ -28,7 +28,7 @@ npm install vue-page-stack-router@2 --save
 ```js
 import Vue from "Vue";
 import router from "./router";
-import { VuePageStackRouter } from "vue-page-stack-router";
+import VuePageStackRouter from "vue-page-stack-router";
 // Pass a routing instance
 Vue.use(VuePageStackRouter, { router });
 ```
@@ -75,7 +75,6 @@ const router = new VueRouter({
 });
 ```
 
-## 使用注意
+## API 和 使用注意
 
-1. 路由的`name`和组件的`name`要一样，缓存才会生效。
-2. 只支持一级路由，不支持嵌套路由。
+请查看[vue-page-stack-router 文档](https://github.com/JoeshuTT/vue-page-stack-router#api)
