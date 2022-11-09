@@ -1,5 +1,4 @@
 import { babel } from "@rollup/plugin-babel";
-import { nodeResolve } from "@rollup/plugin-node-resolve";
 import json from "@rollup/plugin-json";
 import vuePlugin from "rollup-plugin-vue";
 import { readFileSync } from "node:fs";
@@ -49,8 +48,7 @@ export default {
   ],
   external: ["vue", "vue-router"],
   plugins: [
-    // babel({ babelHelpers: "bundled", exclude: "node_modules/**" }),
-    nodeResolve(),
+    babel({ babelHelpers: "bundled", exclude: "node_modules/**" }),
     json(),
     vuePlugin(),
   ],

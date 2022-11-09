@@ -25,6 +25,9 @@ npm install vue-page-stack-router --save
 npm install vue-page-stack-router@2 --save
 ```
 
+## 浏览器支持
+`vue-page-stack-router 3.x` 支持现代浏览器以及 Chrome >= 51、iOS >= 10.0（与 Vue 3 一致）。
+
 ## 使用
 
 **main.js**
