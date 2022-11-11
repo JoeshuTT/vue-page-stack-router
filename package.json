@@ -1,6 +1,6 @@
 {
   "name": "vue-page-stack-router",
-  "version": "3.1.4",
+  "version": "3.2.3",
   "description": "一个 Vue.js 的页面栈路由管理器",
   "author": "JoeshuTT",
   "license": "MIT",
@@ -9,6 +9,7 @@
     "router",
     "page-stack"
   ],
+  "types": "types/index.d.ts",
   "main": "dist/vue-page-stack-router.common.js",
   "module": "dist/vue-page-stack-router.esm.js",
   "browser": "dist/vue-page-stack-router.js",

@@ -1,77 +1,150 @@
-// import { navigationType, navigationDirection } from "./history/common";
+import { version } from "../package.json";
+import { reactive } from "vue";
+import PageStackRouterView from "./components/PageStackRouterView.vue";
+import { navigationType, navigationDirection } from "./history/common";
 import { saveScrollPosition, revertScrollPosition } from "./scrollBehavior";
+import {
+  pageStackRouterKey,
+  pageStackRouteKey,
+  pageStackListKey,
+} from "./injectionSymbols";
+import { getRouteMetaValue } from "./utils/index";
 
-export default class PageStackRouter {
-  constructor(options = {}) {
-    this.pageList = [];
-    this.el = options.el;
-    this.max = options.max;
-    this.disableSaveScrollPosition = options.disableSaveScrollPosition;
+export function createPageStackRouter(options) {
+  const currentPage = reactive({});
+  const pageStackList = reactive([]);
+
+  const {
+    router,
+    el = "#app",
+    max = 10,
+    disableSaveScrollPosition = false,
+  } = options;
+  if (!router) {
+    throw new Error(`vue-router 实例必须存在！`);
   }
 
-  navigate(to, from) {
-    const historyState = window.history.state;
-    const lastPageState = this.pageList.length
-      ? this.pageList[this.pageList.length - 1].state
-      : null;
+  function navigate(to, from) {
+    const toLocation = getRouteInfo(to);
 
-    let delta = 0;
+    if (toLocation.meta.keepAlive) {
+      const historyState = window.history.state;
+      const lastPageState = pageStackList.length
+        ? pageStackList[pageStackList.length - 1].state
+        : null;
 
-    delta = lastPageState ? historyState.position - lastPageState.position : 0;
+      let delta = 0;
 
-    // 在浏览器环境中，浏览器的后退等同于 pop ，前进等同于 push
-    if (delta > 0) {
-      this.push(to);
-      !this.disableSaveScrollPosition && saveScrollPosition(from, this.el);
+      delta = lastPageState
+        ? historyState.position - lastPageState.position
+        : 0;
+
+      // 在浏览器环境中，浏览器的后退等同于 pop ，前进等同于 push
+      if (delta > 0) {
+        toLocation.navigationType = navigationType.push;
+        push(toLocation);
+        toLocation.meta.disableSaveScrollPosition &&
+          saveScrollPosition(from, el);
+      }
+
+      if (delta < 0) {
+        toLocation.navigationType = navigationType.pop;
+        pop();
+        const index = getIndexByName(toLocation.name);
+        if (~index) {
+          toLocation.meta.disableSaveScrollPosition &&
+            revertScrollPosition(toLocation);
+        }
+      }
+
+      toLocation.navigationType = navigationType.replace;
+      replace(toLocation);
+
+      toLocation.navigationDirection = delta
+        ? delta > 0
+          ? navigationDirection.forward
+          : navigationDirection.back
+        : navigationDirection.unknown;
     }
 
-    if (delta < 0) {
-      !this.disableSaveScrollPosition && revertScrollPosition(to);
-      this.pop();
-    }
-
-    this.replace(to);
-
-    // TODO 记录路由导航方向，路由跳转方式
-    // to.navigationType =  navigationType.pop,
-    // to.navigationType =  navigationType.pop,
-
-    //   direction: delta
-    //     ? delta > 0
-    //       ? navigationDirection.forward
-    //       : navigationDirection.back
-    //     : navigationDirection.unknown
+    Object.keys(toLocation).forEach((key) => {
+      currentPage[key] = toLocation[key];
+    });
   }
 
   /**
    * push 方法会在当前栈顶推入一个页面
    */
-  push(location) {
-    const historyState = window.history.state;
-
-    if (this.pageList.length >= this.max) {
-      this.pageList.splice(0, 1);
+  function push(location) {
+    if (pageStackList.length >= max) {
+      pageStackList.splice(0, 1);
     }
 
-    this.pageList.push({
-      name: location.name,
-      state: historyState,
-    });
+    pageStackList.push(location);
   }
 
   /**
    * pop 方法会推出栈顶的一个页面
    */
-  pop() {
-    this.pageList.splice(this.pageList.length - 1);
+  function pop() {
+    pageStackList.splice(pageStackList.length - 1);
   }
 
   /**
    * replace 方法会替换当前栈顶的页面
    */
-  replace(location) {
-    this.pageList.splice(this.pageList.length - 1);
+  function replace(location) {
+    pageStackList.splice(pageStackList.length - 1);
 
-    this.push(location);
+    push(location);
   }
+
+  function getIndexByName(name) {
+    return pageStackList.findIndex((v) => v.name === name);
+  }
+
+  function getRouteInfo(location) {
+    const historyState = window.history.state;
+
+    return {
+      name: location.name,
+      path: location.path,
+      fullPath: location.fullPath,
+      meta: Object.assign({}, location.meta, {
+        keepAlive: getRouteMetaValue("keepAlive", true, location.meta),
+        disableSaveScrollPosition: getRouteMetaValue(
+          "disableSaveScrollPosition",
+          disableSaveScrollPosition,
+          location.meta
+        ),
+      }),
+      state: historyState,
+      navigationType: "",
+      navigationDirection: "",
+    };
+  }
+
+  const pageStackRouter = {
+    version,
+    pageStackList,
+    currentPage,
+
+    install(app) {
+      const pageStackRouter = this;
+
+      router.afterEach((to, from) => {
+        if (to.name) {
+          navigate(to, from);
+        }
+      });
+
+      app.component("PageStackRouterView", PageStackRouterView);
+
+      app.provide(pageStackRouterKey, pageStackRouter);
+      app.provide(pageStackRouteKey, currentPage);
+      app.provide(pageStackListKey, pageStackList);
+    },
+  };
+
+  return pageStackRouter;
 }

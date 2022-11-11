@@ -15,7 +15,6 @@ export function saveScrollPosition(from, appRoot = "#app") {
     const appRootNode = document.querySelector(appRoot); // Vue 应用实例挂载容器元素
     let pageNodeList = [];
 
-
     if (from.meta?.scrollingElement) {
       pageNodeList = [
         appRootNode,

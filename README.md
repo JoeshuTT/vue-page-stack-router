@@ -8,6 +8,8 @@
 - 类似原生 APP 应用，小程序应用的导航体验，即前进刷新后退不刷新
 - 保存滚动位置（默认为 `true`），在离开该页面时自动保存滚动位置，待返回后恢复保存的滚动位置
 
+
+## TODO 整体功能已经实现，还有部分细节需要完善，代码规整
 ## 版本提示
 
 你当前浏览的是 **vue-page-stack-router 3.x 版本** 的文档，适用于 Vue 3 开发。如果你在使用 Vue 2，请浏览 [vue-page-stack-router@2 文档](https://github.com/JoeshuTT/vue-page-stack-router/tree/v2)。
@@ -33,11 +35,20 @@ npm install vue-page-stack-router@2 --save
 **main.js**
 
 ```js
-import Vue from "Vue";
-import router from "./router";
-import { VuePageStackRouter } from "vue-page-stack-router";
-// Pass a routing instance
-Vue.use(VuePageStackRouter, { router });
+import { createApp } from 'vue';
+import App from './App.vue';
+import { router } from './router';
+import { createPageStackRouter } from 'vue-page-stack-router';
+
+// app
+const app = createApp(App);
+
+// pageStackRouter
+const pageStackRouter = createPageStackRouter({ router });
+
+app.use(router);
+app.use(pageStackRouter);
+app.mount('#app');
 ```
 
 **App.vue**
@@ -64,7 +75,7 @@ export const router = createRouter({
     },
     {
       path: "/home",
-      name: "home", // 与组件 name 保持一致
+      name: "Home", // 与组件 name 保持一致
       component: () => import("@/views/home/index.vue"),
       meta: {
         title: "首页",
@@ -72,7 +83,7 @@ export const router = createRouter({
     },
     {
       path: "/good/detail",
-      name: "goodDetail", // 与组件 name 保持一致
+      name: "GoodDetail", // 与组件 name 保持一致
       component: () => import("@/views/good/detail.vue"),
       meta: {
         title: "商品详情",
@@ -95,7 +106,7 @@ export const router = createRouter({
 
 ## 配置路由元信息（可选）
 
-默认是不需要加的，但是为了灵活性，可以根据需要配置路由的 `meta` 字段：
+可以根据业务需要，自定义配置路由的 `meta` 字段：
 
 ```js
 {
@@ -106,6 +117,8 @@ export const router = createRouter({
     title: '登录',
     // `scrollingElement`字段，手动指定页面内滚动容器元素。默认查询全部
     scrollingElement: [".list-scroller", ".header-bd-radio-group"],
+    // `disableSaveScrollPosition`字段，禁用自动保存滚动位置。默认为 `false`
+    disableSaveScrollPosition: true,
     // `keepAlive`字段，是否参与页面栈导航。默认全部参与
     keepAlive: true
   },

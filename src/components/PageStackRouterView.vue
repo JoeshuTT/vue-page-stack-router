@@ -1,21 +1,24 @@
 <template>
   <router-view v-slot="{ Component, route }">
-    <keep-alive :include="pageStackRouter.pageList.map((v) => v.name)">
+    <keep-alive :include="cachedViews">
       <component :is="Component" :key="route.fullPath" />
     </keep-alive>
   </router-view>
 </template>
 
 <script>
-import { usePageStackRouter } from "../useApi";
+import { computed } from "vue";
+import { usePageStackList } from "../useApi";
 
 export default {
   name: "PageStackRouterView",
   setup() {
-    const pageStackRouter = usePageStackRouter();
+    const pageStackList = usePageStackList();
+    const cachedViews = computed(() => pageStackList.map((v) => v.name));
 
     return {
-      pageStackRouter,
+      pageStackList,
+      cachedViews,
     };
   },
 };
