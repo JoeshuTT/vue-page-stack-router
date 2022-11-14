@@ -1,5 +1,5 @@
 /*!
-  * vue-page-stack-router v3.2.3
+  * vue-page-stack-router v3.2.4
   * (c) 2022 JoeshuTT
   * @license MIT
   */
@@ -48,7 +48,7 @@
     return vue.inject(pageStackListKey);
   }
 
-  var version = "3.2.3";
+  var version = "3.2.4";
 
   var script = {
     name: "PageStackRouterView",
@@ -221,6 +221,7 @@
     }
     function navigate(to, from) {
       var toLocation = getRouteInfo(to);
+      var fromLocation = getRouteInfo(from);
       if (toLocation.meta.keepAlive) {
         var historyState = window.history.state;
         var lastPageState = pageStackList.length ? pageStackList[pageStackList.length - 1].state : null;
@@ -231,14 +232,14 @@
         if (delta > 0) {
           toLocation.navigationType = navigationType.push;
           push(toLocation);
-          toLocation.meta.disableSaveScrollPosition && saveScrollPosition(from, el);
+          !fromLocation.meta.disableSaveScrollPosition && saveScrollPosition(fromLocation, el);
         }
         if (delta < 0) {
           toLocation.navigationType = navigationType.pop;
           pop();
           var index = getIndexByName(toLocation.name);
           if (~index) {
-            toLocation.meta.disableSaveScrollPosition && revertScrollPosition(toLocation);
+            !toLocation.meta.disableSaveScrollPosition && revertScrollPosition(toLocation);
           }
         }
         toLocation.navigationType = navigationType.replace;

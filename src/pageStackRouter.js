@@ -26,6 +26,7 @@ export function createPageStackRouter(options) {
 
   function navigate(to, from) {
     const toLocation = getRouteInfo(to);
+    const fromLocation = getRouteInfo(from);
 
     if (toLocation.meta.keepAlive) {
       const historyState = window.history.state;
@@ -43,8 +44,8 @@ export function createPageStackRouter(options) {
       if (delta > 0) {
         toLocation.navigationType = navigationType.push;
         push(toLocation);
-        toLocation.meta.disableSaveScrollPosition &&
-          saveScrollPosition(from, el);
+        !fromLocation.meta.disableSaveScrollPosition &&
+          saveScrollPosition(fromLocation, el);
       }
 
       if (delta < 0) {
@@ -52,7 +53,7 @@ export function createPageStackRouter(options) {
         pop();
         const index = getIndexByName(toLocation.name);
         if (~index) {
-          toLocation.meta.disableSaveScrollPosition &&
+          !toLocation.meta.disableSaveScrollPosition &&
             revertScrollPosition(toLocation);
         }
       }

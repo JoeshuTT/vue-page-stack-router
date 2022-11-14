@@ -8,15 +8,13 @@
 - 类似原生 APP 应用，小程序应用的导航体验，即前进刷新后退不刷新
 - 保存滚动位置（默认为 `true`），在离开该页面时自动保存滚动位置，待返回后恢复保存的滚动位置
 
-
-## TODO 整体功能已经实现，还有部分细节需要完善，代码规整
 ## 版本提示
 
 你当前浏览的是 **vue-page-stack-router 3.x 版本** 的文档，适用于 Vue 3 开发。如果你在使用 Vue 2，请浏览 [vue-page-stack-router@2 文档](https://github.com/JoeshuTT/vue-page-stack-router/tree/v2)。
 
 ## 🔥 例子
 
-- [点击 v-shop 预览查看](https://github.com/JoeshuTT/v-shop)
+- 线上案例，可查看 [v-shop 商城](https://github.com/JoeshuTT/v-shop)
 
 ## 安装
 
@@ -115,12 +113,12 @@ export const router = createRouter({
   component: () => import('@/views/login/index.vue'),
   meta: {
     title: '登录',
+    // `keepAlive`字段，是否参与页面栈导航。默认全部参与
+    keepAlive: true,
     // `scrollingElement`字段，手动指定页面内滚动容器元素。默认查询全部
     scrollingElement: [".list-scroller", ".header-bd-radio-group"],
     // `disableSaveScrollPosition`字段，禁用自动保存滚动位置。默认为 `false`
-    disableSaveScrollPosition: true,
-    // `keepAlive`字段，是否参与页面栈导航。默认全部参与
-    keepAlive: true
+    disableSaveScrollPosition: false,
   },
 },
 ```
@@ -129,3 +127,4 @@ export const router = createRouter({
 
 1. 路由的`name`和组件的`name`都需要设置成一样，缓存才会生效。
 2. 只支持一级路由，不支持嵌套路由。
+3. 也可以去隔壁 v-shop qq群问
