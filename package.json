@@ -1,6 +1,6 @@
 {
   "name": "vue-page-stack-router",
-  "version": "2.1.4",
+  "version": "2.2.0",
   "description": "一个 Vue.js 的页面栈路由管理器",
   "author": "JoeshuTT",
   "license": "MIT",

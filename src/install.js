@@ -1,9 +1,12 @@
 import PageStackRouterView from "./components/PageStackRouterView.vue";
 import PageStackRouter from "./PageStackRouter";
 import history from "./history/index";
-import { isDef } from "./utils/index";
 
 export function install(Vue, options = {}) {
+  const state = {
+    pageStackList: [],
+  };
+
   const {
     router,
     el = "#app",
@@ -60,6 +63,7 @@ export function install(Vue, options = {}) {
   };
 
   const pageStackRouter = new PageStackRouter({
+    pageStackList: state.pageStackList,
     router,
     el,
     max,
@@ -67,22 +71,23 @@ export function install(Vue, options = {}) {
   });
 
   router.afterEach((to, from) => {
-    let keepAlive = to.meta?.keepAlive;
-
-    if (!isDef(keepAlive)) {
-      keepAlive = true;
-    }
-
-    if (to.name && keepAlive) {
+    if (to.name) {
       pageStackRouter.navigate(to, from);
     }
   });
+  Vue.util.defineReactive(state, "pageStackList");
 
   Vue.component("PageStackRouterView", PageStackRouterView);
 
   Object.defineProperty(Vue.prototype, "$pageStackRouter", {
     get() {
       return pageStackRouter;
+    },
+  });
+
+  Object.defineProperty(Vue.prototype, "$pageStackList", {
+    get() {
+      return state.pageStackList;
     },
   });
 }

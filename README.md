@@ -16,7 +16,7 @@
 
 ```shell
 # Vue 3 项目，安装
-npm install vue-page-stack-router --save
+npm install vue-page-stack-router@3 --save
 # Vue 2 项目，安装
 npm install vue-page-stack-router@2 --save
 ```

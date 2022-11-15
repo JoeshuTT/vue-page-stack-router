@@ -1,9 +1,9 @@
 /*!
-  * vue-page-stack-router v2.1.4
+  * vue-page-stack-router v2.2.0
   * (c) 2022 JoeshuTT
   * @license MIT
   */
-var version = "2.1.4";
+var version = "2.2.0";
 
 //
 //
@@ -14,6 +14,11 @@ var version = "2.1.4";
 
 var script = {
   name: "PageStackRouterView",
+  computed: {
+    cachedViews() {
+      return this.$pageStackList.map((v) => v.name);
+    },
+  },
 };
 
 function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier /* server only */, shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
@@ -101,13 +106,7 @@ var __vue_render__ = function () {
   var _c = _vm._self._c || _h;
   return _c(
     "keep-alive",
-    {
-      attrs: {
-        include: _vm.$pageStackRouter.pageList.map(function (v) {
-          return v.name
-        }),
-      },
-    },
+    { attrs: { include: _vm.cachedViews } },
     [_c("router-view", { key: _vm.$route.fullPath })],
     1
   )
@@ -326,52 +325,6 @@ function revertScrollPosition(to, router) {
   }
 }
 
-var history = {
-  actionType: ""
-};
-
-var PageStackRouter = /*#__PURE__*/function () {
-  function PageStackRouter() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    _classCallCheck(this, PageStackRouter);
-    this.pageList = [];
-    this.router = options.router;
-    this.el = options.el;
-    this.max = options.max;
-    this.disableSaveScrollPosition = options.disableSaveScrollPosition;
-  }
-  _createClass(PageStackRouter, [{
-    key: "getIndexByName",
-    value: function getIndexByName(name) {
-      return this.pageList.findIndex(function (v) {
-        return v.name === name;
-      });
-    }
-  }, {
-    key: "navigate",
-    value: function navigate(to, from) {
-      var index = this.getIndexByName(to.name);
-      if (~index) {
-        this.pageList.splice(index + 1);
-        revertScrollPosition(to, this.router);
-      } else {
-        if (history.actionType === "replace") {
-          this.pageList.splice(this.pageList.length - 1);
-        }
-        if (this.pageList.length >= this.max) {
-          this.pageList.splice(0, 1);
-        }
-        this.pageList.push({
-          name: to.name,
-          scrollRestorationList: []
-        });
-        saveScrollPosition(from, this.el);
-      }
-    }
-  }]);
-  return PageStackRouter;
-}();
-
 /**
  * 是否有值
  * @param {*} val
@@ -380,8 +333,88 @@ function isDef(val) {
   return val !== undefined && val !== null;
 }
 
+/**
+ * 根据 key 获取对应路由元信息字段值，值默认为 `true`
+ */
+function getRouteMetaValue(key) {
+  var defaultValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var meta = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var value = meta[key];
+  if (!isDef(value)) {
+    value = defaultValue;
+  }
+  return value;
+}
+
+var history = {
+  actionType: ""
+};
+
+var PageStackRouter = /*#__PURE__*/function () {
+  function PageStackRouter() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    _classCallCheck(this, PageStackRouter);
+    this.pageStackList = options.pageStackList;
+    this.router = options.router;
+    this.el = options.el;
+    this.max = options.max;
+    this.disableSaveScrollPosition = options.disableSaveScrollPosition;
+  }
+  _createClass(PageStackRouter, [{
+    key: "navigate",
+    value: function navigate(to, from) {
+      var toLocation = this.getRouteInfo(to);
+      var fromLocation = this.getRouteInfo(from);
+      var index = this.getIndexByName(toLocation.name);
+      if (toLocation.meta.keepAlive) {
+        if (~index) {
+          this.pageStackList.splice(index + 1);
+          !toLocation.meta.disableSaveScrollPosition && revertScrollPosition(toLocation, this.router);
+        } else {
+          if (history.actionType === "replace") {
+            this.pageStackList.splice(this.pageStackList.length - 1);
+          }
+          if (this.pageStackList.length >= this.max) {
+            this.pageStackList.splice(0, 1);
+          }
+          this.pageStackList.push(toLocation);
+          !fromLocation.meta.disableSaveScrollPosition && saveScrollPosition(fromLocation, this.el);
+        }
+      }
+    }
+  }, {
+    key: "getIndexByName",
+    value: function getIndexByName(name) {
+      return this.pageStackList.findIndex(function (v) {
+        return v.name === name;
+      });
+    }
+  }, {
+    key: "getRouteInfo",
+    value: function getRouteInfo(location) {
+      var historyState = window.history.state;
+      return {
+        name: location.name,
+        path: location.path,
+        fullPath: location.fullPath,
+        meta: Object.assign({}, location.meta, {
+          keepAlive: getRouteMetaValue("keepAlive", true, location.meta),
+          disableSaveScrollPosition: getRouteMetaValue("disableSaveScrollPosition", this.disableSaveScrollPosition, location.meta)
+        }),
+        state: historyState,
+        navigationType: "",
+        navigationDirection: ""
+      };
+    }
+  }]);
+  return PageStackRouter;
+}();
+
 function install(Vue) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var state = {
+    pageStackList: []
+  };
   var router = options.router,
     _options$el = options.el,
     el = _options$el === void 0 ? "#app" : _options$el,
@@ -436,25 +469,27 @@ function install(Vue) {
     return originForward.call(this);
   };
   var pageStackRouter = new PageStackRouter({
+    pageStackList: state.pageStackList,
     router: router,
     el: el,
     max: max,
     disableSaveScrollPosition: disableSaveScrollPosition
   });
   router.afterEach(function (to, from) {
-    var _to$meta;
-    var keepAlive = (_to$meta = to.meta) === null || _to$meta === void 0 ? void 0 : _to$meta.keepAlive;
-    if (!isDef(keepAlive)) {
-      keepAlive = true;
-    }
-    if (to.name && keepAlive) {
+    if (to.name) {
       pageStackRouter.navigate(to, from);
     }
   });
+  Vue.util.defineReactive(state, "pageStackList");
   Vue.component("PageStackRouterView", __vue_component__);
   Object.defineProperty(Vue.prototype, "$pageStackRouter", {
     get: function get() {
       return pageStackRouter;
+    }
+  });
+  Object.defineProperty(Vue.prototype, "$pageStackList", {
+    get: function get() {
+      return state.pageStackList;
     }
   });
 }
