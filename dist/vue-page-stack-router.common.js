@@ -1,5 +1,5 @@
 /*!
-  * vue-page-stack-router v3.2.4
+  * vue-page-stack-router v3.2.5
   * (c) 2022 JoeshuTT
   * @license MIT
   */
@@ -46,7 +46,7 @@ function usePageStackList() {
   return vue.inject(pageStackListKey);
 }
 
-var version = "3.2.4";
+var version = "3.2.5";
 
 var script = {
   name: "PageStackRouterView",
