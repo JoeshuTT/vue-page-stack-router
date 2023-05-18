@@ -1,8 +1,8 @@
 /*!
-  * vue-page-stack-router v3.2.5
-  * (c) 2022 JoeshuTT
-  * @license MIT
-  */
+ * vue-page-stack-router v3.2.6
+ * (c) 2022-2023 JoeshuTT
+ * Released under the MIT License.
+ */
 'use strict';
 
 var vue = require('vue');
@@ -46,7 +46,7 @@ function usePageStackList() {
   return vue.inject(pageStackListKey);
 }
 
-var version = "3.2.5";
+var version = "3.2.6";
 
 var script = {
   name: "PageStackRouterView",
@@ -223,26 +223,27 @@ function createPageStackRouter(options) {
     if (toLocation.meta.keepAlive) {
       var historyState = window.history.state;
       var lastPageState = pageStackList.length ? pageStackList[pageStackList.length - 1].state : null;
-      var delta = 0;
-      delta = lastPageState ? historyState.position - lastPageState.position : 0;
+      var delta = lastPageState ? historyState.position - lastPageState.position : 0;
 
       // 在浏览器环境中，浏览器的后退等同于 pop ，前进等同于 push
       if (delta > 0) {
         toLocation.navigationType = navigationType.push;
+        toLocation.navigationDirection = navigationDirection.forward;
         push(toLocation);
         !fromLocation.meta.disableSaveScrollPosition && saveScrollPosition(fromLocation, el);
-      }
-      if (delta < 0) {
+      } else if (delta < 0) {
         toLocation.navigationType = navigationType.pop;
+        toLocation.navigationDirection = navigationDirection.back;
         pop();
         var index = getIndexByName(toLocation.name);
         if (~index) {
           !toLocation.meta.disableSaveScrollPosition && revertScrollPosition(toLocation);
         }
+      } else {
+        toLocation.navigationType = navigationType.replace;
+        toLocation.navigationDirection = navigationDirection.unknown;
+        replace(toLocation);
       }
-      toLocation.navigationType = navigationType.replace;
-      replace(toLocation);
-      toLocation.navigationDirection = delta ? delta > 0 ? navigationDirection.forward : navigationDirection.back : navigationDirection.unknown;
     }
     Object.keys(toLocation).forEach(key => {
       currentPage[key] = toLocation[key];
@@ -270,8 +271,13 @@ function createPageStackRouter(options) {
    * replace 方法会替换当前栈顶的页面
    */
   function replace(location) {
-    pageStackList.splice(pageStackList.length - 1);
-    push(location);
+    var index = getIndexByName(location.name);
+    if (~index) {
+      pageStackList.splice(index + 1);
+    } else {
+      pageStackList.length && pageStackList.splice(pageStackList.length - 1);
+      pageStackList.push(location);
+    }
   }
   function getIndexByName(name) {
     return pageStackList.findIndex(v => v.name === name);
@@ -296,6 +302,7 @@ function createPageStackRouter(options) {
     pageStackList,
     currentPage,
     install(app) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       var pageStackRouter = this;
       router.afterEach((to, from) => {
         if (to.name) {

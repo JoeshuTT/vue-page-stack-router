@@ -6,11 +6,12 @@ const pkg = JSON.parse(
   readFileSync(new URL("./package.json", import.meta.url))
 );
 
-const banner = `/*!
-  * vue-page-stack-router v${pkg.version}
-  * (c) ${new Date().getFullYear()} JoeshuTT
-  * @license MIT
-  */`;
+const banner =
+  "/*!\n" +
+  ` * vue-page-stack-router v${pkg.version}\n` +
+  ` * (c) 2022-${new Date().getFullYear()} JoeshuTT\n` +
+  " * Released under the MIT License.\n" +
+  " */";
 
 export default {
   input: "./src/index.js",

@@ -30,42 +30,35 @@ export function createPageStackRouter(options) {
 
     if (toLocation.meta.keepAlive) {
       const historyState = window.history.state;
+
       const lastPageState = pageStackList.length
         ? pageStackList[pageStackList.length - 1].state
         : null;
-
-      let delta = 0;
-
-      delta = lastPageState
+      let delta = lastPageState
         ? historyState.position - lastPageState.position
         : 0;
 
       // 在浏览器环境中，浏览器的后退等同于 pop ，前进等同于 push
       if (delta > 0) {
         toLocation.navigationType = navigationType.push;
+        toLocation.navigationDirection = navigationDirection.forward;
         push(toLocation);
         !fromLocation.meta.disableSaveScrollPosition &&
           saveScrollPosition(fromLocation, el);
-      }
-
-      if (delta < 0) {
+      } else if (delta < 0) {
         toLocation.navigationType = navigationType.pop;
+        toLocation.navigationDirection = navigationDirection.back;
         pop();
         const index = getIndexByName(toLocation.name);
         if (~index) {
           !toLocation.meta.disableSaveScrollPosition &&
             revertScrollPosition(toLocation);
         }
+      } else {
+        toLocation.navigationType = navigationType.replace;
+        toLocation.navigationDirection = navigationDirection.unknown;
+        replace(toLocation);
       }
-
-      toLocation.navigationType = navigationType.replace;
-      replace(toLocation);
-
-      toLocation.navigationDirection = delta
-        ? delta > 0
-          ? navigationDirection.forward
-          : navigationDirection.back
-        : navigationDirection.unknown;
     }
 
     Object.keys(toLocation).forEach((key) => {
@@ -95,9 +88,13 @@ export function createPageStackRouter(options) {
    * replace 方法会替换当前栈顶的页面
    */
   function replace(location) {
-    pageStackList.splice(pageStackList.length - 1);
-
-    push(location);
+    const index = getIndexByName(location.name);
+    if (~index) {
+      pageStackList.splice(index + 1);
+    } else {
+      pageStackList.length && pageStackList.splice(pageStackList.length - 1);
+      pageStackList.push(location);
+    }
   }
 
   function getIndexByName(name) {
@@ -131,6 +128,7 @@ export function createPageStackRouter(options) {
     currentPage,
 
     install(app) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const pageStackRouter = this;
 
       router.afterEach((to, from) => {
