@@ -127,4 +127,3 @@ export const router = createRouter({
 
 1. 路由的`name`和组件的`name`都需要设置成一样，缓存才会生效。
 2. 只支持一级路由，不支持嵌套路由。
-3. 也可以去隔壁 v-shop qq群问
